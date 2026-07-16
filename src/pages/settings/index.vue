@@ -11,8 +11,9 @@ const goLocations = () => uni.navigateTo({ url: '/pages/locations/index' })
 </script>
 <template>
   <view class="page"
-    ><view class="title">我的</view><view class="card" @click="goCategories">分类管理</view
-    ><view class="card" @click="goLocations">位置管理</view
+    ><view class="title">我的</view
+    ><view class="card row" @click="goCategories"><text>分类管理</text><text>›</text></view
+    ><view class="card row" @click="goLocations"><text>位置管理</text><text>›</text></view
     ><view class="card"
       ><view>云开发环境</view
       ><input

@@ -54,6 +54,15 @@ exports.main = async (event) => {
         if (!parent.data || parent.data.household_id !== householdId || !parent.data.is_active)
           return fail('上级位置无效')
         if (payload._id === payload.parentId) return fail('位置不能以自身为上级')
+        let ancestorId = parent.data.parent_id
+        let depth = 0
+        while (ancestorId && depth < 20) {
+          if (ancestorId === payload._id) return fail('不能移动到自己的子位置下')
+          const ancestor = await db.collection('locations').doc(ancestorId).get()
+          if (!ancestor.data || ancestor.data.household_id !== householdId) break
+          ancestorId = ancestor.data.parent_id
+          depth += 1
+        }
       }
       const data = { name, updated_at: db.serverDate() }
       if (collection === 'locations') data.parent_id = payload.parentId || null

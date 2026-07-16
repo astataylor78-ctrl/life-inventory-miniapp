@@ -2,10 +2,12 @@
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { itemApi } from '@/services/api'
+import { useSessionStore } from '@/stores/session'
 import type { Item } from '@/types/models'
 const items = ref<Item[]>([])
 const loading = ref(false)
 const error = ref('')
+const session = useSessionStore()
 async function load() {
   loading.value = true
   error.value = ''
@@ -17,9 +19,13 @@ async function load() {
     loading.value = false
   }
 }
-onShow(load)
+onShow(async () => {
+  if (await session.ensure()) await load()
+  else error.value = session.error
+})
 const goAdd = () => uni.navigateTo({ url: '/pages/item-edit/index' })
 const goItems = () => uni.switchTab({ url: '/pages/items/index' })
+const goDetail = (id: string) => uni.navigateTo({ url: `/pages/item-detail/index?id=${id}` })
 </script>
 <template>
   <view class="page"
@@ -35,8 +41,21 @@ const goItems = () => uni.switchTab({ url: '/pages/items/index' })
       ><view class="card"
         ><view class="row"
           ><text>最近更新</text><text class="muted" @click="goItems">查看全部</text></view
-        ><view v-for="item in items.slice(0, 5)" :key="item._id">{{ item.name }}</view></view
+        ><view
+          v-for="item in items.slice(0, 5)"
+          :key="item._id"
+          class="row item-link"
+          @click="goDetail(item._id)"
+          ><text>{{ item.name }}</text
+          ><text>›</text></view
+        ></view
       ></template
     ></view
   >
 </template>
+<style scoped>
+.item-link {
+  padding: 20rpx 0;
+  border-bottom: 1px solid #edf0ee;
+}
+</style>

@@ -1,27 +1,39 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { itemApi } from '@/services/api'
 import { fromScaledQuantity } from '@/domain/quantity'
 import type { Item } from '@/types/models'
 const item = ref<Item | null>(null),
   loading = ref(true),
   error = ref('')
-onLoad(async (q) => {
+const id = ref('')
+onLoad((q) => {
+  id.value = String(q?.id || '')
+})
+async function load() {
+  loading.value = true
+  error.value = ''
   try {
-    item.value = await itemApi.get(String(q?.id || ''))
+    item.value = await itemApi.get(id.value)
   } catch (e) {
     error.value = e instanceof Error ? e.message : '加载失败'
   } finally {
     loading.value = false
   }
-})
+}
+onShow(load)
 async function archive() {
   if (!item.value) return
   const c = await uni.showModal({ title: '确认归档', content: '归档后物品默认不再显示。' })
   if (c.confirm) {
-    await itemApi.archive(item.value._id)
-    uni.navigateBack()
+    try {
+      await itemApi.archive(item.value._id)
+      uni.showToast({ title: '已归档', icon: 'success' })
+      uni.navigateBack()
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : '归档失败'
+    }
   }
 }
 const goEdit = () => {
@@ -31,7 +43,8 @@ const goEdit = () => {
 <template>
   <view class="page"
     ><view v-if="loading" class="muted">正在加载…</view
-    ><view v-else-if="error" class="error">{{ error }}</view
+    ><view v-else-if="error" class="error"
+      >{{ error }}<button size="mini" @click="load">重试</button></view
     ><view v-else-if="item"
       ><view class="title">{{ item.name }}</view
       ><view class="card"

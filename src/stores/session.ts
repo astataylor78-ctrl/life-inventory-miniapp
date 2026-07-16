@@ -9,12 +9,25 @@ export const useSessionStore = defineStore('session', {
     error: '',
   }),
   actions: {
-    async login() {
+    async ensure() {
+      if (this.session) return true
       this.loading = true
       this.error = ''
       try {
         this.session = await authApi.init()
-        uni.switchTab({ url: '/pages/home/index' })
+        return true
+      } catch (error) {
+        this.error = error instanceof Error ? error.message : '登录失败'
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+    async login() {
+      this.loading = true
+      this.error = ''
+      try {
+        if (await this.ensure()) uni.switchTab({ url: '/pages/home/index' })
       } catch (error) {
         this.error = error instanceof Error ? error.message : '登录失败'
       } finally {

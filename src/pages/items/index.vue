@@ -4,6 +4,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { categoryApi, itemApi, locationApi } from '@/services/api'
 import { fromScaledQuantity } from '@/domain/quantity'
 import type { Category, Item, Location } from '@/types/models'
+import { useSessionStore } from '@/stores/session'
 
 const items = ref<Item[]>([])
 const categories = ref<Category[]>([])
@@ -15,6 +16,8 @@ const sort = ref('updated')
 const sorts = ['最近更新', '名称', '库存从低到高']
 const loading = ref(false)
 const error = ref('')
+const catalogError = ref('')
+const session = useSessionStore()
 
 async function load() {
   loading.value = true
@@ -33,15 +36,32 @@ async function load() {
   }
 }
 onShow(async () => {
-  ;[categories.value, locations.value] = await Promise.all([categoryApi.list(), locationApi.list()])
-  await load()
+  if (!(await session.ensure())) {
+    error.value = session.error
+    return
+  }
+  const pendingLocation = uni.getStorageSync<string>('pendingLocationFilter')
+  if (pendingLocation) {
+    locationId.value = pendingLocation
+    uni.removeStorageSync('pendingLocationFilter')
+  }
+  catalogError.value = ''
+  try {
+    ;[categories.value, locations.value] = await Promise.all([
+      categoryApi.list(),
+      locationApi.list(),
+    ])
+    await load()
+  } catch (e) {
+    catalogError.value = e instanceof Error ? e.message : '筛选条件加载失败'
+  }
 })
 function selectCategory(index: number) {
-  categoryId.value = categories.value[index]?._id || ''
+  categoryId.value = index === 0 ? '' : categories.value[index - 1]?._id || ''
   load()
 }
 function selectLocation(index: number) {
-  locationId.value = locations.value[index]?._id || ''
+  locationId.value = index === 0 ? '' : locations.value[index - 1]?._id || ''
   load()
 }
 function selectSort(index: number) {
@@ -50,6 +70,19 @@ function selectSort(index: number) {
 }
 const goDetail = (id: string) => uni.navigateTo({ url: `/pages/item-detail/index?id=${id}` })
 const goAdd = () => uni.navigateTo({ url: '/pages/item-edit/index' })
+const categoryOptions = () => ['全部分类', ...categories.value.map((item) => item.name)]
+const locationOptions = () => ['全部位置', ...locations.value.map((item) => item.name)]
+const categoryLabel = () =>
+  categories.value.find((item) => item._id === categoryId.value)?.name || '全部分类'
+const locationLabel = () =>
+  locations.value.find((item) => item._id === locationId.value)?.name || '全部位置'
+function clearFilters() {
+  keyword.value = ''
+  categoryId.value = ''
+  locationId.value = ''
+  sort.value = 'updated'
+  load()
+}
 </script>
 <template>
   <view class="page">
@@ -63,22 +96,20 @@ const goAdd = () => uni.navigateTo({ url: '/pages/item-edit/index' })
       /><button size="mini" @click="load">搜索</button></view
     >
     <view class="row filters"
-      ><picker
-        :range="categories"
-        range-key="name"
-        @change="selectCategory(Number($event.detail.value))"
-        ><text>分类筛选</text></picker
-      ><picker
-        :range="locations"
-        range-key="name"
-        @change="selectLocation(Number($event.detail.value))"
-        ><text>位置筛选</text></picker
+      ><picker :range="categoryOptions()" @change="selectCategory(Number($event.detail.value))"
+        ><text>{{ categoryLabel() }}</text></picker
+      ><picker :range="locationOptions()" @change="selectLocation(Number($event.detail.value))"
+        ><text>{{ locationLabel() }}</text></picker
       ><picker :range="sorts" @change="selectSort(Number($event.detail.value))"
         ><text>排序</text></picker
-      ></view
+      ><text v-if="keyword || categoryId || locationId" @click="clearFilters">清除</text></view
+    >
+    <view v-if="catalogError" class="error"
+      >{{ catalogError }}<button size="mini" @click="clearFilters">重试</button></view
     >
     <view v-if="loading" class="muted">正在加载…</view
-    ><view v-else-if="error" class="error">{{ error }}</view
+    ><view v-else-if="error" class="error"
+      >{{ error }}<button size="mini" @click="load">重试</button></view
     ><view v-else-if="!items.length" class="card muted">没有找到物品</view>
     <view v-for="item in items" v-else :key="item._id" class="card" @click="goDetail(item._id)"
       ><view class="row"
