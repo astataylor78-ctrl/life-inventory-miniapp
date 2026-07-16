@@ -1,0 +1,43 @@
+.page {
+  padding: 28rpx;
+}
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+}
+.title {
+  font-size: 42rpx;
+  font-weight: 700;
+  margin-bottom: 24rpx;
+}
+.muted {
+  color: #738078;
+}
+.error {
+  color: #b42318;
+  padding: 24rpx 0;
+}
+.btn {
+  background: #287a4d;
+  color: white;
+  border-radius: 16rpx;
+  margin-top: 20rpx;
+}
+.btn-secondary {
+  background: #e6f2eb;
+  color: #225f3d;
+}
+.field {
+  background: white;
+  padding: 24rpx;
+  margin-bottom: 18rpx;
+  border-radius: 14rpx;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
