@@ -42,18 +42,98 @@ const goEdit = () => {
 </script>
 <template>
   <view class="page"
-    ><view v-if="loading" class="muted">正在加载…</view
-    ><view v-else-if="error" class="error"
-      >{{ error }}<button size="mini" @click="load">重试</button></view
+    ><view v-if="loading" class="card loading">正在加载物品…</view
+    ><view v-else-if="error" class="card error-state"
+      ><text>{{ error }}</text
+      ><button class="secondary-button" @click="load">重试</button></view
     ><view v-else-if="item"
-      ><view class="title">{{ item.name }}</view
-      ><view class="card"
-        ><view>当前库存：{{ fromScaledQuantity(item.quantityScaled) }} {{ item.unit }}</view
-        ><view>安全库存：{{ fromScaledQuantity(item.minQuantityScaled) }} {{ item.unit }}</view
-        ><view>品牌：{{ item.brand || '未填写' }}</view
-        ><view>备注：{{ item.note || '无' }}</view></view
-      ><button class="btn" @click="goEdit">编辑</button
-      ><button class="btn-secondary" @click="archive">归档</button></view
+      ><view class="detail-head"
+        ><view class="detail-avatar">{{ item.name.slice(0, 1) }}</view
+        ><view class="page-title">{{ item.name }}</view
+        ><text v-if="item.brand" class="page-subtitle">{{ item.brand }}</text
+        ><view class="stock"
+          ><text class="stock-number">{{ fromScaledQuantity(item.quantityScaled) }}</text
+          ><text>{{ item.unit }}</text></view
+        ><text class="pill">当前库存</text></view
+      ><view class="detail-card"
+        ><view class="detail-row"
+          ><text>安全库存</text
+          ><text>{{ fromScaledQuantity(item.minQuantityScaled) }} {{ item.unit }}</text></view
+        ><view class="detail-row"
+          ><text>目标库存</text
+          ><text>{{
+            item.targetQuantityScaled === null
+              ? '未设置'
+              : fromScaledQuantity(item.targetQuantityScaled) + ' ' + item.unit
+          }}</text></view
+        ><view class="detail-row"
+          ><text>品牌</text><text>{{ item.brand || '未填写' }}</text></view
+        ><view class="detail-note"
+          ><text>备注</text><text>{{ item.note || '暂无备注' }}</text></view
+        ></view
+      ><button class="primary-button" @click="goEdit">编辑物品</button
+      ><button class="secondary-button danger-button" @click="archive">归档物品</button></view
     ></view
   >
 </template>
+<style scoped>
+.loading,
+.error-state {
+  text-align: center;
+}
+.detail-head {
+  text-align: center;
+  padding: 24rpx 0 42rpx;
+}
+.detail-avatar {
+  width: 132rpx;
+  height: 132rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24rpx;
+  border-radius: 40rpx;
+  background: #e8f3ed;
+  color: #276749;
+  font-size: 52rpx;
+  font-weight: 700;
+}
+.stock {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8rpx;
+  margin: 28rpx 0 10rpx;
+  color: #276749;
+}
+.stock-number {
+  font-size: 70rpx;
+  font-weight: 700;
+}
+.detail-card {
+  overflow: hidden;
+  border-radius: 28rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 30rpx rgba(35, 61, 47, 0.05);
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 30rpx;
+  padding: 26rpx;
+  border-bottom: 1rpx solid #edf0ee;
+}
+.detail-row text:first-child,
+.detail-note text:first-child {
+  color: #7d8982;
+}
+.detail-note {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  padding: 26rpx;
+}
+.detail-note text:last-child {
+  line-height: 1.7;
+}
+</style>

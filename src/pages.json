@@ -18,5 +18,9 @@
       { "pagePath": "pages/settings/index", "text": "我的" }
     ]
   },
-  "globalStyle": { "navigationBarTextStyle": "black", "navigationBarBackgroundColor": "#ffffff" }
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#f7f5ef",
+    "backgroundColor": "#f7f5ef"
+  }
 }

@@ -23,51 +23,105 @@ const showAgreement = () =>
   })
 </script>
 <template>
-  <view class="page"
-    ><view class="card hero"
-      ><view class="title">生活物品管家</view
-      ><text class="muted">记录家中物品，减少重复购买和寻找时间。</text
-      ><button class="btn" :loading="session.loading" @click="session.login">微信登录</button
-      ><text class="config-link" @click="showConfig = !showConfig">首次配置云环境</text
-      ><view v-if="showConfig"
-        ><input v-model="env" class="field" password placeholder="输入云开发环境 ID" /><button
-          size="mini"
-          @click="saveEnv"
-        >
-          保存
-        </button></view
-      ><view v-if="session.error" class="error">{{ session.error }}</view
-      ><text class="privacy">登录仅用于隔离你的家庭数据，不会公开个人信息。</text
-      ><view class="links"
-        ><text @click="showPrivacy">隐私说明</text
-        ><text @click="showAgreement">用户协议</text></view
-      ></view
+  <view class="login-page"
+    ><view class="brand-mark">家</view><view class="page-title">生活物品管家</view
+    ><text class="login-copy">清楚知道家里有什么、放在哪里、还剩多少。</text
+    ><view class="feature-row"
+      ><view><text class="feature-number">01</text><text>减少重复购买</text></view
+      ><view><text class="feature-number">02</text><text>快速找到物品</text></view
+      ><view><text class="feature-number">03</text><text>掌握家庭库存</text></view></view
+    ><button class="primary-button login-button" :loading="session.loading" @click="session.login">
+      微信一键登录</button
+    ><view v-if="session.error" class="error">{{ session.error }}</view
+    ><text class="config-link" @click="showConfig = !showConfig">{{
+      showConfig ? '收起环境配置' : '首次使用？配置云环境'
+    }}</text
+    ><view v-if="showConfig" class="config-card"
+      ><text class="form-label">云开发环境 ID</text
+      ><input v-model="env" class="field" password placeholder="输入后仅保存在本机" /><button
+        class="secondary-button"
+        @click="saveEnv"
+      >
+        保存配置
+      </button></view
+    ><text class="privacy">登录即表示你同意以下条款，数据仅用于个人家庭物品管理。</text
+    ><view class="links"
+      ><text @click="showPrivacy">隐私说明</text><text>·</text
+      ><text @click="showAgreement">用户协议</text></view
     ></view
   >
 </template>
 <style scoped>
-.hero {
-  margin-top: 20vh;
+.login-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 14vh 42rpx 60rpx;
+  background: linear-gradient(180deg, #edf5f0 0, #f7f5ef 48%);
 }
+.brand-mark {
+  width: 96rpx;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 34rpx;
+  border-radius: 30rpx;
+  background: #276749;
+  color: #fff;
+  font-size: 42rpx;
+  font-weight: 700;
+  box-shadow: 0 18rpx 35rpx rgba(39, 103, 73, 0.22);
+}
+.login-copy {
+  display: block;
+  margin-top: 18rpx;
+  color: #637169;
+  font-size: 30rpx;
+  line-height: 1.65;
+}
+.feature-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+  margin: 50rpx 0;
+}
+.feature-row view {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 22rpx 14rpx;
+  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.72);
+  color: #536159;
+  font-size: 23rpx;
+}
+.feature-number {
+  color: #276749;
+  font-weight: 700;
+}
+.login-button {
+  margin-top: 20rpx;
+}
+.config-link,
 .privacy {
   display: block;
-  font-size: 24rpx;
-  color: #87928b;
-  margin-top: 30rpx;
+  text-align: center;
+  margin-top: 24rpx;
+  color: #77847d;
+  font-size: 23rpx;
+}
+.config-card {
+  margin-top: 22rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: #fff;
 }
 .links {
   display: flex;
   justify-content: center;
-  gap: 32rpx;
-  margin-top: 20rpx;
-  color: #287a4d;
-  font-size: 24rpx;
-}
-.config-link {
-  display: block;
-  text-align: center;
-  margin-top: 24rpx;
-  color: #738078;
-  font-size: 24rpx;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  color: #276749;
+  font-size: 23rpx;
 }
 </style>
