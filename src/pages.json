@@ -1,0 +1,26 @@
+{
+  "pages": [
+    { "path": "pages/login/index", "style": { "navigationBarTitleText": "登录" } },
+    { "path": "pages/home/index", "style": { "navigationBarTitleText": "首页" } },
+    { "path": "pages/items/index", "style": { "navigationBarTitleText": "物品" } },
+    { "path": "pages/item-edit/index", "style": { "navigationBarTitleText": "编辑物品" } },
+    { "path": "pages/item-detail/index", "style": { "navigationBarTitleText": "物品详情" } },
+    { "path": "pages/settings/index", "style": { "navigationBarTitleText": "我的" } },
+    { "path": "pages/categories/index", "style": { "navigationBarTitleText": "分类管理" } },
+    { "path": "pages/locations/index", "style": { "navigationBarTitleText": "位置管理" } }
+  ],
+  "tabBar": {
+    "color": "#738078",
+    "selectedColor": "#287a4d",
+    "list": [
+      { "pagePath": "pages/home/index", "text": "首页" },
+      { "pagePath": "pages/items/index", "text": "物品" },
+      { "pagePath": "pages/settings/index", "text": "我的" }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#f7f5ef",
+    "backgroundColor": "#f7f5ef"
+  }
+}
